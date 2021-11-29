@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Local Storage</title>
+    <style type="text/CSS">
+        table {
+            width: 90%;
+            border-collapse: collapse;
+            background-color: lightblue;
+            font-family: Perpetua;
+        }
+
+        table, td, th {
+            border: 1px solid black;
+            padding: 4px;
+        }
+
+        th {
+            text-align: center;
+            color: white;
+            background-color: darkblue;
+        }
+
+        tr.oddrow {
+            background-color: white;
+        }
+
+        td {
+            text-align: center;
+        }
+    </style>
+    <script type="text/javascript">
+        const pre =new Object();
+        var tags;
+        var num=0;
+        function start()
+        {
+            var saveButton = document.getElementById( "addButton" );
+            saveButton.addEventListener( "click", saveSearch, false );
+            var clearButton = document.getElementById( "removeAllButton" );
+            clearButton.addEventListener( "click", clearAllSearches, false );
+        }
+        function clearAllSearches() 
+        {
+            localStorage.clear();
+            num=0;
+            loadSearches(); 
+        }
+        function deleteTag( tag ) 
+        {
+            localStorage.removeItem( tag );
+            loadSearches(); // reload searches
+        }
+        function loadSearches() 
+        {
+            if ( !window.sessionStorage.getItem( "herePreviously" ) )
+            {
+                sessionStorage.setItem( "herePreviously", "true" );
+                document.getElementById( "welcomeMessage" ).innerHTML = 
+                    "Welcome to the Favorite Twitter Searches App";
+            } // end if
+
+            var length = localStorage.length; // number of key-value pairs
+            tags = []; // create empty array
+
+            // load all keys
+            for (var i = 0; i < length; ++i) 
+            {
+                tags[i] = localStorage.key(i);
+            } // end for
+
+            tags.sort(); // sort the keys
+
+            var markup = "<table><thead color:'bule'><tr><th>Title</th><th>Author</th><th >Year</th><th>URL</th></tr></thead><tbody>"; // used to store search link markup
+            // build list of links
+            for(var tag in tags)
+            {   
+                let text = localStorage.getItem(tags[tag]);
+                let obj = JSON.parse(text);
+                markup += "<tr><td>"+obj.title+"</td><td>"+obj.author+"</td><td>"+obj.year+"</td><td><a href="+obj.url+" target='_blank'>"+obj.url+"</a></td></tr>";
+            } // end for
+            markup += "</tbody></table>";
+            document.getElementById("display").innerHTML = markup;
+        }
+        function saveSearch() 
+        {
+            var book1 = document.getElementById("book");
+            var author1 = document.getElementById("author");
+            var year1 = document.getElementById("year");
+            var bookurl = document.getElementById("bookurl");
+           pre.title=book1.value;
+           pre.author=author1.value;
+           pre.year=year1.value;
+           pre.url=bookurl.value;
+           localStorage.setItem("testJSON"+num++,JSON.stringify(pre));
+           book1.value="";
+           author1.value="";
+           year1.value="";
+           bookurl.value="";
+           loadSearches() ;
+        }
+        window.addEventListener( "load", start, false );
+    </script>
+</head>
+
+<body>
+    <a href="https://github.com/lingken1028/Local/upload/gh-pages" target='_blank'>GitHub Link</a>
+    <form action="#">
+        <p>
+            <label>Book Title: <input id= "book" type="text" ></label>
+            <label>Author(s): <input id= "author" type="text" ></label>
+            <label>Year: <input id= "year" type="number" ></label>
+            <label>Book URL: <input id= "bookurl" type="URL" size = "40"></label>
+        </p>
+        <p>
+            <input type="button" value="Add New Item" id="addButton">
+            <input type="button" value="Remove All Items" id="removeAllButton">
+        </p>
+    </form>
+    <hr>
+    <div id="display"><table >
+       <thead color="bule">
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th >Year</th>
+                <th>URL</th>
+            </tr>
+        </thead>
+    </table></div>
+</body>
+
+</html>
